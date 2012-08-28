@@ -1,0 +1,6 @@
+Testing stuff:
+  lein repl
+  (load "core")
+  (in-ns 'microblog.core)
+  (def base (html-resource "templates/base.html"))
+  ;Then I can do (select base <selector>) to test out selectors

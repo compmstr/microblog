@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <title>Clojure Microblog</title>
+    <script src="js/jquery.js"></script>
+    <script src="js/base.js"></script>
+    <link rel='stylesheet' type='text/css' href='css/base.css' />
+  </head>
+<body>
+  <div id='login-container'>
+    <div id='login-overlay'>
+      <span class='login-message'></span>
+      <label for='username'>Username: <input type='text' id='username-entry' name='username' /></label><br />
+      <label for='password'>Password: <input type='password' id='password-entry' name='password' /></label><br />
+      <input type='button' value='Log in' onclick='loginUser();' />
+      <input type='button' value='Cancel' onclick='$("#login-overlay").hide();' /><br />
+    </div>
+    <div id='login-box'>
+      <span class='login-link' onclick='$("#login-overlay").toggle();'>Login</span>
+      <span class='loggedin-message'>Hello, <span id='username-message'>Username</span> <span class='logout-link' onclick='logoutUser();'>Log Out</span></span>
+    </div>
+  </div>
+  <div id='container'>
+    <div id='header'>
+      <h1 id='site-title'>App Testbed</h1>
+      <div id='top-nav'>
+        <ul>
+          <li><a href='slashdot.org'>Item 1</a></li>
+          <li><a href='arstechnica.com'>Item 2</a></li>
+          <li><a href='reddit.com/r/technology'>Item 3</a></li>
+        </ul>
+      </div>
+    </div>
+    <div id='content'>
+      <div id='left-wrapper'>
+        <div class='post'>
+          <div class='post-title'>
+            Here's a post!
+          </div>
+          <div class='post-date'>
+            2012-08-27 13:00
+          </div>
+          <div class='post-content'>
+            Some content for this post...
+          </div>
+        </div>
+      </div>
+      <div id='right-wrapper'>
+        right column
+      </div>
+    </div>
+    <div id='footer'>
+      footer
+    </div>
+  </div>
+</body>
+</html>
