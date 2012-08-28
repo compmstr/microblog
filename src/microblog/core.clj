@@ -1,6 +1,7 @@
 (ns microblog.core
   (:require [microblog.db :as db]
             [microblog.user :as user]
+            [microblog.nav :as nav]
             [microblog.blog :as blog])
   (:use ring.util.response
         ring.middleware.session
@@ -13,27 +14,13 @@
         [ring.adapter.jetty :only [run-jetty]]
         microblog.util))
 
-(def main-navmenu [{:title "Slashdot" :url "http://slashdot.org"}
-              {:title "Ars" :url "http://arstechnica.com"}
-              {:title "Daily WTF" :url "http://thedailywtf.com"}])
-
-;Outputting the main menu:
-; (apply str (emit * (unwrap
-;         ((content (map topnav-item main-navmenu)) {:tag :div}))))
-(defsnippet topnav-item "templates/base.html" 
-  ;just use the very first li as a template
-  [:div#top-nav :ul [:li (nth-of-type 1)]] ;selector
-  [navitem] ;args
-  [:a] (do->
-          (set-attr :href (:url navitem))
-          (content (:title navitem))))
-
 (deftemplate index "templates/base.html"
   [topnav req]
   ;To apply a snippet to a list of items, use map
-  [:div#top-nav :ul] (content (map topnav-item topnav))
+  [:div#top-nav :ul] (content (map nav/topnav-item topnav))
+  [:div#left-wrapper] (content (blog/show-blogs req))
   [:div#footer] (html-content "Copyright &copy; 2012")
-  [:div#login-container] (substitute (login-box req)))
+  [:div#login-container] (content (user/login-box req)))
 
 ;Return the template with no transforms
 (deftemplate raw "templates/base.html"
@@ -58,7 +45,7 @@
     ["raw"] (-> (raw) response constantly)
     ["blog" &] blog/routes
     ["user" &] user/routes
-    [""] #(response (index main-navmenu %))))
+    [""] #(response (index nav/main-navmenu %))))
 
 (defonce server
   (run-jetty #'my-app-handler {:port 8888

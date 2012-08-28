@@ -99,3 +99,10 @@ div#footer{
 .post .post-content{
   
 }
+
+.add-post .edit-title-wrapper{
+  clear: both;
+}
+.add-post .edit-body-wrapper{
+  clear: both;
+}

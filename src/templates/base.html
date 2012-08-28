@@ -1,9 +1,9 @@
 <html>
   <head>
     <title>Clojure Microblog</title>
-    <script src="js/jquery.js"></script>
-    <script src="js/base.js"></script>
-    <link rel='stylesheet' type='text/css' href='css/base.css' />
+    <script src="/js/jquery.js"></script>
+    <script src="/js/base.js"></script>
+    <link rel='stylesheet' type='text/css' href='/css/base.css' />
   </head>
 <body>
   <div id='login-container'>
@@ -32,6 +32,20 @@
     </div>
     <div id='content'>
       <div id='left-wrapper'>
+        <div class='add-post'>
+          <div class='edit-title-wrapper'>
+            <label for='edit-title'>Name: <br />
+            <input type='text' id='post-edit-title' name='edit-title' /></label>
+          </div>
+          <div class='edit-body-wrapper'>
+            <label for='edit-body'>Post:<br />
+            <textarea id='post-edit-body' name='edit-body'>
+            </textarea></label>
+          </div>
+          <div class='edit-submit-wrapper'>
+            <input type='button' onclick='submitPost();' value='Submit' />
+          </div>
+        </div>
         <div class='post'>
           <div class='post-title'>
             Here's a post!

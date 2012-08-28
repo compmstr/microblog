@@ -11,6 +11,7 @@
 (def db-schema {
           :microblog [
             [:id :integer "PRIMARY KEY" "AUTO_INCREMENT"]
+            [:author :integer]
             [:title "varchar(255)"]
             [:body :text]
             [:timestamp :datetime "NOT NULL"]]
@@ -22,6 +23,9 @@
             [:lname "varchar(255)"]
             [:permissions :text]]
           })
+
+(declare insert-record)
+(declare create-tables)
 
 (defn setup-initial-users []
   (insert-record :users {:username "guest" 
@@ -39,12 +43,6 @@
   (create-tables db-schema)
   (setup-initial-users))
 
-(defn create-tables [tables]
-  (map (fn [[key val]]
-          (create-table
-            (concat (list key)
-                    val)))
-        tables))
 (defn create-table [args]
   "Creates a DB table, taking in a vector of args to pass
   through to the main sql/create-table
@@ -52,6 +50,12 @@
   (sql/with-connection mysql-db
     (sql/transaction
       (apply sql/create-table args))))
+(defn create-tables [tables]
+  (map (fn [[key val]]
+          (create-table
+            (concat (list key)
+                    val)))
+        tables))
 (defn insert-record [table record]
   (sql/with-connection mysql-db
     (sql/insert-record table record )))

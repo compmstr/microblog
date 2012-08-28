@@ -7,11 +7,6 @@
         [clojure.data.json :only [json-str read-json]]
         net.cgrand.enlive-html))
 
-(def routes
-  (app
-    ["login"] login-ajax
-    ["logout"] logout-ajax))
-
 (defsnippet login-box "templates/base.html"
   [:div#login-container]
   [req & data]
@@ -89,4 +84,9 @@
                 {:headers {"Content-type" "application/json"}})]
             (println "Login failed -" user)
             (set-logged-in res nil)))))
+
+(def routes
+  (app
+    ["login"] login-ajax
+    ["logout"] logout-ajax))
 
