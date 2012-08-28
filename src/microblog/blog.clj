@@ -27,11 +27,11 @@
   (db/select-result ["select * from microblog"]))
 
 (defsnippet show-blogs "templates/base.html"
-  [:#left-wrapper :.post]
+  [:#left-wrapper [:.post first-of-type]]
   [req]
-  [[:.post] (nth-of-type 1)] (clone-for [entry (get-blog-posts)]
+  [:.post] (clone-for [entry (get-blog-posts)]
                                 [:.post-title] (content (:title entry))
-                                [:.post-date] (content (:timestamp entry))
+                                [:.post-date] (content (.toString (:timestamp entry)))
                                 [:.post-content] (content (:body entry))))
 
 (defsnippet add-blog "templates/base.html"
