@@ -51,4 +51,7 @@
   (run-jetty #'my-app-handler {:port 8888
                                :join? false}))
 
-(defn reload [] (.stop server) (load "core") (.start server))
+(defn reload []
+  (.stop server)
+  (map load ["db" "user" "nav" "blog" "core"])
+  (.start server))
