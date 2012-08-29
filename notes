@@ -4,3 +4,12 @@ Testing stuff:
   (in-ns 'microblog.core)
   (def base (html-resource "templates/base.html"))
   ;Then I can do (select base <selector>) to test out selectors
+
+push updates:
+  use a nodejs server to broadcast updates
+    use a net module connection to connect with regular socket from clojure
+    use socket.io to connect to web clients, and to send out broadcasts
+
+    client on clojure app does update
+      clojure app sends update through socket to node.js server
+      node.js server broadcasts updates through socket.io

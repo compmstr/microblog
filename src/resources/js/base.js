@@ -29,7 +29,9 @@ function logoutUser(){
 }
 
 function postCallback(data, textStatus, xhrReq){
-  alert(data);
+    $('#post-edit-title')[0].value = '';
+    $('#post-edit-body')[0].value = '';
+    $('#add-post-message').html("Message Posted");
 }
 
 function submitPost(){

@@ -2,6 +2,7 @@
   (:require [microblog.db :as db])
   (:require [microblog.nav :as nav])
   (:require [microblog.user :as user])
+  (:require [microblog.template :as template])
   (:import [java.util Date])
   (:use microblog.util
         ring.util.response
@@ -18,10 +19,9 @@
                                     :body body 
                                     :author (:uid author) 
                                     :timestamp (Date.)})
-  (merge
-    (response
-      (json-str {:status "success" :data "Posted"}))
-      {:headers {"Content-type" "application/json"}})))
+      (-> (response
+           (json-str {:status "success" :data "Posted"}))
+          (content-type "application/json"))))
 
 (defn get-blog-posts []
   (db/select-result ["select * from microblog"]))
@@ -39,17 +39,16 @@
   [req]
   [:*] identity)
 
-(deftemplate add-post "templates/base.html"
+(defsnippet* add-post-snip
+  (template/base-snip topnav req)
+  [:html]
   [topnav req]
-  [:div#top-nav :ul] (content (map nav/topnav-item topnav))
-  [:div#footer] (html-content "Copyright &copy; 2012")
-  [:div#login-container] (content (user/login-box req))
-  [:div#left-wrapper]
-    (let [user (logged-in-user req)]
-      (content (add-blog req))))
-
+  [:div#left-wrapper] (let [user (logged-in-user req)]
+                        (content (add-blog req))))
 
 (def routes
   (app
-    ["add"] #(response (add-post nav/main-navmenu %))
-    ["post"] blog-post))
+   :get (app
+         ["add"] #(snippet-to-response add-post-snip nav/main-navmenu %))
+   :post (app
+          ["post"] blog-post)))

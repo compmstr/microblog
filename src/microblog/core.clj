@@ -2,6 +2,7 @@
   (:require [microblog.db :as db]
             [microblog.user :as user]
             [microblog.nav :as nav]
+            [microblog.template :as template]
             [microblog.blog :as blog])
   (:use ring.util.response
         ring.middleware.session
@@ -14,23 +15,23 @@
         [ring.adapter.jetty :only [run-jetty]]
         microblog.util))
 
-(deftemplate index "templates/base.html"
+(defsnippet* index-snip
+  (template/base-snip topnav req)
+  [:html]
   [topnav req]
   ;To apply a snippet to a list of items, use map
-  [:div#top-nav :ul] (content (map nav/topnav-item topnav))
   [:div#left-wrapper] (content (blog/show-blogs req))
-  [:div#footer] (html-content "Copyright &copy; 2012")
-  [:div#login-container] (content (user/login-box req)))
-
+  )
+  
 ;Return the template with no transforms
 (deftemplate raw "templates/base.html"
   [])
 
 (defn json-response [req]
-  (merge
-    (response 
-      (json-str {:status "success" :data "haha, you thought there would be data"}))
-      {:headers {"Content-type" "application/json"}}))
+  (->
+   (response
+    (json-str {:status "success" :data "haha, you thought there would be data"}))
+   (content-type "application/json")))
 
 (def my-app-handler
   (app
@@ -45,7 +46,8 @@
     ["raw"] (-> (raw) response constantly)
     ["blog" &] blog/routes
     ["user" &] user/routes
-    [""] #(response (index nav/main-navmenu %))))
+    [""] #(snippet-to-response index-snip nav/main-navmenu %)
+    [&] (not-found "Page not Found")))
 
 (defonce server
   (run-jetty #'my-app-handler {:port 8888
@@ -53,5 +55,5 @@
 
 (defn reload []
   (.stop server)
-  (map load ["db" "user" "nav" "blog" "core"])
+  (map load ["template" "db" "user" "nav" "blog" "core"])
   (.start server))

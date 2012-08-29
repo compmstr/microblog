@@ -1,4 +1,6 @@
-(ns microblog.util)
+(ns microblog.util
+  (:use net.cgrand.enlive-html
+        ring.util.response))
 
 ;;Enlive helper functions
 (defn remove-element 
@@ -21,7 +23,9 @@
 (defn logged-in-user
   "Gets the currently logged in user for a request"
   [req]
-  ((:session req) :logged-in))
+  (if (:session req)
+    ((:session req) :logged-in)
+    nil))
   
 (defn response-set-headers [res headers]
   (merge res
@@ -33,3 +37,24 @@
     (println (req :session))
     (handler req)))
 
+(defn snippet-to-response
+  "Converts a snippet to a response, pass in the snippet, and the args to pass that snippet"
+  [snip & args]
+  (response
+   (apply str
+          (emit* (apply snip args)))))
+
+(defn template-from-snippet
+  "Turns a snippet into a template, basically just wraps it in emit*"
+  [snippet]
+  (comp #(apply str %) emit* snippet))
+
+(defmacro defsnippet*
+"Snippet definition using nodes instead of a source file
+You can use the args in the nodes form (ex: passing the request to the snippet used as a base"
+  [name nodes selector args & forms]
+  `(def ~name
+     (fn ~args
+       ((net.cgrand.enlive-html/snippet*
+         (net.cgrand.enlive-html/select ~nodes ~selector) ~args ~@forms)
+        ~@args))))
