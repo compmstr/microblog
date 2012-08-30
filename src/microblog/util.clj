@@ -37,12 +37,15 @@
     (println (req :session))
     (handler req)))
 
+(defn snippet-to-string [snip & args]
+  (apply str
+         (emit* (apply snip args))))
+
 (defn snippet-to-response
   "Converts a snippet to a response, pass in the snippet, and the args to pass that snippet"
   [snip & args]
   (response
-   (apply str
-          (emit* (apply snip args)))))
+   (apply snippet-to-string snip args)))
 
 (defn template-from-snippet
   "Turns a snippet into a template, basically just wraps it in emit*"
@@ -58,3 +61,7 @@ You can use the args in the nodes form (ex: passing the request to the snippet u
        ((net.cgrand.enlive-html/snippet*
          (net.cgrand.enlive-html/select ~nodes ~selector) ~args ~@forms)
         ~@args))))
+
+(defn js-node
+  [content]
+  {:tag :script :attrs {:language "javascript"} :content content})

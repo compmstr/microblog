@@ -1,12 +1,8 @@
 (ns microblog.db
   (:import java.util.Date)
   (:import org.mindrot.jbcrypt.BCrypt)
+  (:require [microblog.config :as config])
   (:require [clojure.java.jdbc :as sql]))
-
-(def mysql-db {:subprotocol "mysql"
-               :subname "//localhost:3306/test"
-               :user "test_user"
-               :password "password"})
 
 (def db-schema {
           :microblog [
@@ -47,7 +43,7 @@
   "Creates a DB table, taking in a vector of args to pass
   through to the main sql/create-table
   "
-  (sql/with-connection mysql-db
+  (sql/with-connection config/mysql-db
     (sql/transaction
       (apply sql/create-table args))))
 (defn create-tables [tables]
@@ -57,16 +53,16 @@
                     val)))
         tables))
 (defn insert-record [table record]
-  (sql/with-connection mysql-db
+  (sql/with-connection config/mysql-db
     (sql/insert-record table record )))
 (defn select-result [query]
-  (sql/with-connection mysql-db
+  (sql/with-connection config/mysql-db
     (sql/with-query-results results
       query
       (into [] results))))
 ;-> [{:data "Hello World"}]
 (defn drop-table [table]
-  (sql/with-connection mysql-db
+  (sql/with-connection config/mysql-db
     (sql/drop-table table)))
 
 (defn test-db []

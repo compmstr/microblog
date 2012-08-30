@@ -3,6 +3,7 @@
   (:require [microblog.nav :as nav])
   (:require [microblog.user :as user])
   (:require [microblog.template :as template])
+  (:require [microblog.socket-conn :as socket-conn])
   (:import [java.util Date])
   (:use microblog.util
         ring.util.response
@@ -13,26 +14,35 @@
 (defn blog-post [req]
   (let [title ((:params req) "title")
         body ((:params req) "body")
-        author (logged-in-user req)]
+        author (logged-in-user req)
+        date (Date.)]
       (println "Author:" author "\nTitle:" title "\nBody:" body)
+      (socket-conn/write-broadcast
+       (json-str {:message "blog-added" :new-entry (snippet-to-string
+                                                    single-blog-post title body (.toString date))}))
       (db/insert-record :microblog {:title title 
                                     :body body 
                                     :author (:uid author) 
-                                    :timestamp (Date.)})
+                                    :timestamp date})
       (-> (response
            (json-str {:status "success" :data "Posted"}))
           (content-type "application/json"))))
 
 (defn get-blog-posts []
-  (db/select-result ["select * from microblog"]))
+  (db/select-result ["SELECT * FROM microblog ORDER BY timestamp DESC"]))
+
+(defsnippet single-blog-post "templates/base.html"
+  [:#left-wrapper [:.post first-of-type]]
+  [title timestamp body]
+  [:.post-title] (content title)
+  [:.post-date] (content timestamp)
+  [:.post-content] (content body))
 
 (defsnippet show-blogs "templates/base.html"
   [:#left-wrapper [:.post first-of-type]]
   [req]
   [:.post] (clone-for [entry (get-blog-posts)]
-                                [:.post-title] (content (:title entry))
-                                [:.post-date] (content (.toString (:timestamp entry)))
-                                [:.post-content] (content (:body entry))))
+                      (substitute (single-blog-post (:title entry) (.toString (:timestamp entry)) (:body entry)))))
 
 (defsnippet add-blog "templates/base.html"
   [:#left-wrapper [:.add-post (nth-of-type 1)]]

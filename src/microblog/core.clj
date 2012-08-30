@@ -3,7 +3,9 @@
             [microblog.user :as user]
             [microblog.nav :as nav]
             [microblog.template :as template]
-            [microblog.blog :as blog])
+            [microblog.config :as config]
+            [microblog.blog :as blog]
+            [microblog.socket-conn :as socket-conn])
   (:use ring.util.response
         ring.middleware.session
         ring.middleware.params
@@ -20,6 +22,7 @@
   [:html]
   [topnav req]
   ;To apply a snippet to a list of items, use map
+  [:head] (append (js-node "var change_this = 5;"))
   [:div#left-wrapper] (content (blog/show-blogs req))
   )
   
@@ -48,6 +51,10 @@
     ["user" &] user/routes
     [""] #(snippet-to-response index-snip nav/main-navmenu %)
     [&] (not-found "Page not Found")))
+
+;Start up the socket.io connection
+(if (nil? @socket-conn/conn)
+  (socket-conn/start-conn))
 
 (defonce server
   (run-jetty #'my-app-handler {:port 8888
