@@ -13,7 +13,7 @@ var server = net.createServer(function (socket){
       var split = msg.split(/\s+/);
       socket.write("PONG " + split[1] + "\r\n");
       console.log("Pong");
-    }else if(msg.indexOf("BROADCAST " == 0)){
+    }else if(msg.indexOf("BROADCAST ") == 0){
       var bcast = msg.substring("BROADCAST ".length);
       console.log("Broadcasting message: " + bcast);
     }
