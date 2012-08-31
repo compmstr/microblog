@@ -65,3 +65,7 @@ You can use the args in the nodes form (ex: passing the request to the snippet u
 (defn js-node
   [content]
   {:tag :script :attrs {:language "javascript"} :content content})
+
+(defn remote-js-node
+  [url]
+  {:tag :script :attrs {:language "javascript" :src url} :content nil})

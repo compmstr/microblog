@@ -51,7 +51,8 @@
           (json-str {:status "success" :data "Logged Out"
                       :updates {:login-container (apply str
                                                   (emit*
-                                                    (login-box updated-req)))}}))
+                                                   ;Redirect after logout
+                                                    (js-node "window.location='http://localhost:8888'")))}}))
           {:headers {"Content-type" "application/json"}})
       nil)))
 

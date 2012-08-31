@@ -22,7 +22,9 @@
   [:html]
   [topnav req]
   ;To apply a snippet to a list of items, use map
-  [:head] (append (js-node "var change_this = 5;"))
+  [:head] (append (js-node "var change_this = 5;")
+                  (remote-js-node "http://localhost:1338/socket.io/socket.io.js")
+                  (remote-js-node "/js/update-posts.js"))
   [:div#left-wrapper] (content (blog/show-blogs req))
   )
   

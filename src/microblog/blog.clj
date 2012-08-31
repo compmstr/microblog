@@ -15,9 +15,9 @@
 (defsnippet single-blog-post "templates/base.html"
   [:#left-wrapper [:.post first-of-type]]
   [title timestamp body]
-  [:.post-title] (content title)
+  [:.post-title :h3] (content title)
   [:.post-date] (content timestamp)
-  [:.post-content] (content body))
+  [:.post-content] (html-content body))
 
 (defn blog-post [req]
   (let [title ((:params req) "title")
@@ -27,7 +27,7 @@
       (println "Author:" author "\nTitle:" title "\nBody:" body)
       (socket-conn/write-broadcast
        (json-str {:message "blog-added" :new-entry (snippet-to-string
-                                                    single-blog-post title body (.toString date))}))
+                                                    single-blog-post title (.toString date) body)}))
       (db/insert-record :microblog {:title title 
                                     :body body 
                                     :author (:uid author) 
@@ -57,9 +57,22 @@
   [:div#left-wrapper] (let [user (logged-in-user req)]
                         (content (add-blog req))))
 
+(defn add-post [req]
+  (let [cur-user (logged-in-user req)]
+    ;(if (and cur-user (.contains (:permissions cur-user) "add_posts"))
+    (if (and
+         cur-user
+         (->
+          cur-user
+          :permissions
+          (.contains "add_posts")))
+      (snippet-to-response add-post-snip nav/main-navmenu req)
+      (template/noauth-response))))
+      
+
 (def routes
   (app
    :get (app
-         ["add"] #(snippet-to-response add-post-snip nav/main-navmenu %))
+         ["add"] add-post)
    :post (app
           ["post"] blog-post)))

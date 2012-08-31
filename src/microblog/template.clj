@@ -1,16 +1,24 @@
 (ns microblog.template
   (:require
    [microblog.user :as user]
-   [microblog.nav :as nav])
+   [microblog.nav :as nav]
+   [microblog.config :as config])
   (:use
    net.cgrand.enlive-html))
 
 (defsnippet base-snip "templates/base.html" [:html] [topnav req]
+  [:h1#site-title] (content {:tag :a :attrs {:href config/home-url} :content "App Testbed"})
   [:div#top-nav :ul] (content (map nav/topnav-item topnav))
   [:div#footer] (html-content "Copyright &copy; 2012")
   [:div#login-container] (content (user/login-box req))
   )
 
+(deftemplate no-auth "templates/noauth.html"
+  [])
+
+(defn noauth-response
+  []
+  {:status 403 :headers {"Content-type" "text/html"} :body (no-auth)})
 
 ;;Regular template
 ;(deftemplate index "templates/base.html"

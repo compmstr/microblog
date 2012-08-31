@@ -7,4 +7,5 @@
 /checkouts
 /.lein-deps-sum
 /node.js/node-v*/*
+/node.js/node_modules/*
 /node.js/node

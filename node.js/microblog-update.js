@@ -1,8 +1,9 @@
 var net = require('net');
 
-var server = net.createServer(function (socket){
-  socket.write('Echo Server\r\n');
-  socket.pipe(socket);
+var server = net.createServer(net_handler);
+var io = require('socket.io').listen(1338);
+
+function net_handler(socket){
   socket.on("end", function(){
     console.log("Connection closed");
   });
@@ -16,8 +17,13 @@ var server = net.createServer(function (socket){
     }else if(msg.indexOf("BROADCAST ") == 0){
       var bcast = msg.substring("BROADCAST ".length);
       console.log("Broadcasting message: " + bcast);
+      io.sockets.emit('update', bcast);
     }
   });
-});
+}
 
 server.listen(1337, '127.0.0.1');
+
+io.sockets.on('connection', function(socket){
+  console.log('socket.io connection');
+});
