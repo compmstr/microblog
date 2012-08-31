@@ -4,9 +4,11 @@
    [microblog.nav :as nav]
    [microblog.config :as config])
   (:use
+   microblog.util
    net.cgrand.enlive-html))
 
 (defsnippet base-snip "templates/base.html" [:html] [topnav req]
+  [:div#admin-bar] (content (user/admin-bar req))
   [:h1#site-title] (content {:tag :a :attrs {:href config/home-url} :content "App Testbed"})
   [:div#top-nav :ul] (content (map nav/topnav-item topnav))
   [:div#footer] (html-content "Copyright &copy; 2012")
@@ -19,6 +21,11 @@
 (defn noauth-response
   []
   {:status 403 :headers {"Content-type" "text/html"} :body (no-auth)})
+
+(deftemplate page-404 "templates/404.html"
+  [])
+(defn page-404-response [& req]
+  {:status 404 :headers {"Content-type" "text/html"} :body (page-404)})
 
 ;;Regular template
 ;(deftemplate index "templates/base.html"

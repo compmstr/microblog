@@ -69,3 +69,11 @@ You can use the args in the nodes form (ex: passing the request to the snippet u
 (defn remote-js-node
   [url]
   {:tag :script :attrs {:language "javascript" :src url} :content nil})
+
+(defn check-permissions
+  "Checks to make sure that every entry in needed is within granted permissions"
+  [needed granted]
+  (every?
+   (fn [perm]
+     (some #(= perm %) granted))
+   needed))

@@ -52,7 +52,7 @@
     ["blog" &] blog/routes
     ["user" &] user/routes
     [""] #(snippet-to-response index-snip nav/main-navmenu %)
-    [&] (not-found "Page not Found")))
+    [&] template/page-404-response))
 
 ;Start up the socket.io connection
 (if (nil? @socket-conn/conn)

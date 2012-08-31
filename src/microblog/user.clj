@@ -1,11 +1,29 @@
 (ns microblog.user
   (:require [microblog.db :as db])
+  (:require [clojure.string :as string])
   (:import org.mindrot.jbcrypt.BCrypt)
   (:use microblog.util
         ring.util.response
-        [net.cgrand.moustache :only [app]]
+        [net.cgrand.moustache :only [app pass]]
         [clojure.data.json :only [json-str read-json]]
         net.cgrand.enlive-html))
+
+(defsnippet admin-bar "templates/base.html"
+  [:div#admin-bar]
+  [req]
+  [:li] (if-let [cur-user (logged-in-user req)]
+                (fn [elt]
+                  (let [user-perms (-> cur-user
+                                       :permissions
+                                       (string/split #","))
+                        elt-perms (-> elt
+                                      :attrs
+                                      :permissions
+                                      (string/split #","))]
+                    (if (check-permissions elt-perms user-perms)
+                      elt
+                      nil)))
+                (remove-element)));remove element if not logged in
 
 (defsnippet login-box "templates/base.html"
   [:div#login-container]
@@ -65,29 +83,28 @@
       (if logged-in ;if we logged in successfully:
         (let* [updated-req (set-logged-in req user)
              res
-              (merge
+              (->
                 (response
                   (json-str 
                     {:status "success" :data "Logged In" 
-                    :updates {:login-container (apply str 
-                                                (emit* 
-                                                  (login-box updated-req)))}}))
-                {:headers {"Content-type" "application/json"}})]
+                    :updates {:login-container (snippet-to-string login-box updated-req)
+                              :admin-bar (snippet-to-string admin-bar updated-req)}}))
+                (content-type "application/json"))]
           (set-logged-in res user))
         (let* [updated-req (set-logged-in req nil) ;login failed
               res
-              (merge
+              (->
                 (response
                   (json-str {:status "failed" :data user
-                             :updates {:login-container (apply str
-                                                        (emit*
-                                                          (login-box updated-req {:message user})))}}))
-                {:headers {"Content-type" "application/json"}})]
+                    :updates {:login-container (snippet-to-string login-box updated-req {:message user})
+                              :admin-bar (snippet-to-string admin-bar updated-req)}}))
+                (content-type "application/json"))]
             (println "Login failed -" user)
             (set-logged-in res nil)))))
 
 (def routes
   (app
     ["login"] login-ajax
-    ["logout"] logout-ajax))
+    ["logout"] logout-ajax
+    [&] pass))
 

@@ -73,6 +73,7 @@
 (def routes
   (app
    :get (app
-         ["add"] add-post)
+         ["add"] add-post
+         [&] pass)
    :post (app
           ["post"] blog-post)))
