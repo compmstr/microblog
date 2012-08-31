@@ -11,6 +11,14 @@
         [net.cgrand.moustache :exclude [not-found]]
         net.cgrand.enlive-html))
 
+
+(defsnippet single-blog-post "templates/base.html"
+  [:#left-wrapper [:.post first-of-type]]
+  [title timestamp body]
+  [:.post-title] (content title)
+  [:.post-date] (content timestamp)
+  [:.post-content] (content body))
+
 (defn blog-post [req]
   (let [title ((:params req) "title")
         body ((:params req) "body")
@@ -30,13 +38,6 @@
 
 (defn get-blog-posts []
   (db/select-result ["SELECT * FROM microblog ORDER BY timestamp DESC"]))
-
-(defsnippet single-blog-post "templates/base.html"
-  [:#left-wrapper [:.post first-of-type]]
-  [title timestamp body]
-  [:.post-title] (content title)
-  [:.post-date] (content timestamp)
-  [:.post-content] (content body))
 
 (defsnippet show-blogs "templates/base.html"
   [:#left-wrapper [:.post first-of-type]]

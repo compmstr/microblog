@@ -5,6 +5,7 @@
   (:import (java.net Socket)
            (java.io PrintWriter BufferedReader InputStreamReader)))
 
+(declare start-conn)
 (defonce conn (ref nil))
 
 (defn connect-in-5-seconds []
