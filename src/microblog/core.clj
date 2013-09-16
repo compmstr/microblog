@@ -42,8 +42,8 @@
   (app
     wrap-params
     wrap-session
-    wrap-params
     ;Using wrap-resource because it goes off the classpath
+    ; instead of wrap-file, which goes off the filesystem
     (wrap-resource "resources")
     (wrap-file-info)
     wrap-session-print
@@ -64,5 +64,5 @@
 
 (defn reload []
   (.stop server)
-  (map load ["template" "db" "user" "nav" "blog" "core"])
+  (doall (map load ["template" "db" "user" "nav" "blog" "core"]))
   (.start server))

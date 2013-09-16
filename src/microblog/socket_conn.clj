@@ -59,8 +59,10 @@
         (let [cur-time (System/currentTimeMillis)
               next-ping (+ (:last-ping @conn) 5000)
               pong-timeout (+ (:last-pong @conn) 15000)]
-          ;Send out a PING <timestamp> message every 5 seconds
-          ; unless the last ping is greater than the last pong (we sent out a ping last)
+          ;;Send out a PING <timestamp> message every 5 seconds
+          ;; unless the last ping is greater than the last pong (we sent out a ping last)
+          ;; the PONG always returns the same timestamp as the PING it's responding to, so
+          ;; if we've gotten a PONG, the :last-ping and :last-pong will be equal
           (if (and
                (= (:last-ping @conn) (:last-pong @conn))
                (>= cur-time next-ping))
@@ -76,6 +78,7 @@
               (disconnect)
               (connect-in-5-seconds))))))
     (Thread/sleep 100))
+  ;:exit is not nil
   (println "Closing connection to socket")
   (.close (:out @conn))
   (.close (:socket @conn))

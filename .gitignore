@@ -9,3 +9,5 @@
 /node.js/node-v*/*
 /node.js/node_modules/*
 /node.js/node
+/.lein-repl-history
+/target
