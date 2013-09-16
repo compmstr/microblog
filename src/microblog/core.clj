@@ -1,6 +1,6 @@
 (ns microblog.core
   (:require [microblog.db :as db]
-            [microblog.user :as user]
+            [microblog.user :as mbuser]
             [microblog.nav :as nav]
             [microblog.template :as template]
             [microblog.config :as config]
@@ -50,7 +50,7 @@
     ["json"] json-response
     ["raw"] (-> (raw) response constantly)
     ["blog" &] blog/routes
-    ["user" &] user/routes
+    ["user" &] mbuser/routes
     [""] #(snippet-to-response index-snip nav/main-navmenu %)
     [&] template/page-404-response))
 
@@ -64,5 +64,5 @@
 
 (defn reload []
   (.stop server)
-  (doall (map load ["template" "db" "user" "nav" "blog" "core"]))
+  (doall (map load ["template" "db" "mbuser" "nav" "blog" "core"]))
   (.start server))

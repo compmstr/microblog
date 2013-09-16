@@ -2,7 +2,7 @@
   :description "Microblog example using Mustache and Enlive"
   :source-path "src"
   :main microblog.core
-  :dependencies [[org.clojure/clojure "1.4.0"]
+  :dependencies [[org.clojure/clojure "1.5.1"]
                  [enlive "1.0.0"]
                  [net.cgrand/moustache "1.1.0"]
                  [org.clojure/data.json "0.1.3"]
